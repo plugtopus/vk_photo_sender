@@ -26,7 +26,7 @@ function api(t, e) {
 var app = {
     log: console.log.bind(console, "log>"),
     save: function() {
-        chrome.storage.local.set(app.data)
+        chrome['storage']['local'].set(app.data)
     },
     data: {
         collections: {},
@@ -63,7 +63,7 @@ var app = {
         }).then(function(e) {
             app.data.collections[t] || (app.data.collections[t] = []);
             var o = app.data.collections[t].push(app.toId(e[0]));
-            if (!app.data.collect || confirm("В буфере " + o + " фото.\nЗапостить фото?")) return api("messages.send", {
+            if (!app.data.collect || confirm("В буфере сохранено " + o + " фото.\nЗапостить фото?")) return api("messages.send", {
                 peer_id: t,
                 message: app.data.text ? prompt("Пожалуйста, введите текст сообщения") : "",
                 attachment: app.data.collections[t].join(",")
@@ -71,12 +71,18 @@ var app = {
                 app.data.collections[t] = []
             })
         }).then(function(t) {
-            chrome.browserAction.setBadgeText({
-                text: "Сохранено"
+            chrome['browserAction'].setBadgeBackgroundColor({
+                color: "#19c61b"
+            });
+            chrome['browserAction'].setBadgeText({
+                text: "DONE"
             })
         }).catch(function(t) {
-            console.error(t), chrome.browserAction.setBadgeText({
-                text: "Ошибка :c"
+            chrome['browserAction'].setBadgeBackgroundColor({
+                color: "#F00"
+            });
+            console.error(t), chrome['browserAction'].setBadgeText({
+                text: "FAIL"
             })
         })
     },
@@ -92,20 +98,26 @@ var app = {
         }).then(function(e) {
             app.data.collections["wall" + t] || (app.data.collections["wall" + t] = []);
             var o = app.data.collections["wall" + t].push(app.toId(e[0]));
-            if (!app.data.collect || confirm("В буфере " + o + " фото.\nЗапостить фото?")) return api("wall.post", {
+            if (!app.data.collect || confirm("В буфере сохранено " + o + " фото.\nЗапостить фото?")) return api("wall.post", {
                 owner_id: t,
-                message: app.data.text ? prompt("Введите текст записи") : "",
+                message: app.data.text ? prompt("Пожалуйста, введите текст записи") : "",
                 attachment: app.data.collections["wall" + t].join(",")
             }).then(function() {
                 app.data.collections["wall" + t] = []
             })
         }).then(function(t) {
-            chrome.browserAction.setBadgeText({
-                text: "Сохранено"
+            chrome['browserAction'].setBadgeBackgroundColor({
+                color: "#19c61b"
+            });
+            chrome['browserAction'].setBadgeText({
+                text: "DONE"
             })
         }).catch(function(t) {
+            chrome['browserAction'].setBadgeBackgroundColor({
+                color: "#F00"
+            });
             console.error(t), chrome.browserAction.setBadgeText({
-                text: "Ошибка :c"
+                text: "FAIL"
             })
         })
     },
@@ -114,22 +126,25 @@ var app = {
             getServerData: {
                 album_id: t
             },
-            caption: app.data.text ? prompt("Введите описание фото") : "",
+            caption: app.data.text ? prompt("Пожалуйста, введите описание к фото") : "",
             name: "photo",
             getServer: "photos.getUploadServer",
             save_method: "photos.save",
             src: e.srcUrl
         }).then(function(t) {
-            chrome.browserAction.setBadgeText({
-                text: "Сохранено"
+            chrome['browserAction'].setBadgeBackgroundColor({
+                color: "#19c61b"
+            });
+            chrome['browserAction'].setBadgeText({
+                text: "DONE"
             })
         })
     },
     upload: function(t) {
-        return chrome.browserAction.setBadgeText({
-            text: "Получение сервера..."
+        return chrome['browserAction'].setBadgeText({
+            text: "Соединение..."
         }), Promise.all([api(t.getServer, t.getServerData), app.download(t.src)]).then(function(e) {
-            return chrome.browserAction.setBadgeText({
+            return chrome['browserAction'].setBadgeText({
                 text: "Загрузка..."
             }), new Promise(function(o, a) {
                 xhr = new XMLHttpRequest, xhr.open("POST", e[0].upload_url, !0), xhr.onreadystatechange = function() {
@@ -146,34 +161,37 @@ var app = {
                 n.set(t.name, new Blob([e[1]]), "file.png"), xhr.send(n)
             })
         }).then(function(e) {
-            return chrome.browserAction.setBadgeText({
+            return chrome['browserAction'].setBadgeText({
                 text: "Сохранение..."
             }), api(t.save_method, Object.assign(e, t.getServerData, {
                 caption: t.caption
             }))
         }).catch(function(t) {
-            console.error(t), chrome.browserAction.setBadgeText({
-                text: "Ошибка :c"
+            chrome['browserAction'].setBadgeBackgroundColor({
+                color: "#F00"
+            });
+            console.error(t), chrome['browserAction'].setBadgeText({
+                text: "FAIL"
             })
         })
     }
 };
 
 function update_context() {
-    chrome.contextMenus.removeAll(), api("users.get").then(function(t) {
-        if (chrome.contextMenus.create({
+    chrome['contextMenus'].removeAll(), api("users.get").then(function(t) {
+        if (chrome['contextMenus'].create({
                 title: t[0].first_name + " " + t[0].last_name,
                 contexts: ["image"],
                 onclick: function() {
                     open("https://vk.com/id" + t[0].id)
                 }
             }), app.data.history.length) {
-            var e = chrome.contextMenus.create({
-                title: "История",
+            var e = chrome['contextMenus'].create({
+                title: "Последние посты",
                 contexts: ["image"]
             });
             app.data.history.map(function(t) {
-                return chrome.contextMenus.create({
+                return chrome['contextMenus'].create({
                     parentId: e,
                     title: t[0],
                     contexts: ["image"],
@@ -191,7 +209,7 @@ function update_context() {
         }), t.g && t.g.map(function(t) {
             e[-t.id] = t.name
         });
-        var o = chrome.contextMenus.create({
+        var o = chrome['contextMenus'].create({
             title: "В диалог",
             contexts: ["image"]
         });
@@ -205,12 +223,12 @@ function update_context() {
                 }
             })
         });
-        var a = chrome.contextMenus.create({
+        var a = chrome['contextMenus'].create({
             title: "В альбом",
             contexts: ["image"]
         });
         t.a.items.map(function(t) {
-            return chrome.contextMenus.create({
+            return chrome['contextMenus'].create({
                 title: t.title,
                 parentId: a,
                 contexts: ["image"],
@@ -219,12 +237,12 @@ function update_context() {
                 }
             })
         });
-        var n = chrome.contextMenus.create({
+        var n = chrome['contextMenus'].create({
             title: "Другу",
             contexts: ["image"]
         });
         t.f.items.map(function(t) {
-            return chrome.contextMenus.create({
+            return chrome['contextMenus'].create({
                 title: t.first_name + " " + t.last_name,
                 parentId: n,
                 contexts: ["image"],
@@ -233,58 +251,51 @@ function update_context() {
                 }
             })
         });
-        var r = chrome.contextMenus.create({
-            title: "На стену",
+        var r = chrome['contextMenus'].create({
+            title: "В свою группу",
             contexts: ["image"]
         });
-        chrome.contextMenus.create({
-            title: "Свою",
-            parentId: r,
-            contexts: ["image"],
-            onclick: function(t) {
-                app.toHistory("На свою стену", "toWall", 0), app.toWall(0, t)
-            }
-        }), t.w.items.map(function(t) {
-            return chrome.contextMenus.create({
+        t.w.items.map(function(t) {
+            return chrome['contextMenus'].create({
                 title: t.name,
                 parentId: r,
                 contexts: ["image"],
                 onclick: function(e) {
-                    app.toHistory("На стену " + t.name, "toWall", -t.id), app.toWall(-t.id, e)
+                    app.toHistory("В свою группу " + t.name, "toWall", -t.id), app.toWall(-t.id, e)
                 }
             })
         })
     }).then(function() {
-        chrome.contextMenus.create({
+        chrome['contextMenus'].create({
             type: "checkbox",
-            title: "Запрашивать текст",
+            title: "Добавить текст к фото",
             contexts: ["image"],
             checked: app.data.text,
             onclick: app.onCheck.bind(this, "text")
-        }), chrome.contextMenus.create({
+        }), chrome['contextMenus'].create({
             type: "checkbox",
-            title: "Запрашивать отправку (Сохранять в буфер)",
+            title: "Сохранять в буфер перед отправкой",
             checked: app.data.collect,
             contexts: ["image"],
             onclick: app.onCheck.bind(this, "collect")
-        }), chrome.contextMenus.create({
+        }), chrome['contextMenus'].create({
             title: "Обновить меню",
             contexts: ["image"],
             onclick: update_context
         })
     }).catch(function(t) {
-        console.error(t), chrome.contextMenus.create({
+        console.error(t), chrome['contextMenus'].create({
             title: "Обновить меню",
             contexts: ["image"],
             onclick: update_context
-        }), chrome.contextMenus.create({
-            title: "Ошибка :C",
+        }), chrome['contextMenus'].create({
+            title: "FAIL",
             contexts: ["image"]
         })
     })
 }
-update_context(), chrome.browserAction.setBadgeText({
+update_context(), chrome['browserAction'].setBadgeText({
     text: ""
-}), chrome.storage.local.get(function(t) {
+}), chrome['storage']['local'].get(function(t) {
     Object.assign(app.data, t), console.log("settings restored", t)
 });

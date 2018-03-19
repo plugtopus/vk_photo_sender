@@ -7,16 +7,17 @@
          "48": "img/128.png"
       }
    },
-   "description": "Это расширение позволяет моментально сохранить и отправить любую картинку в окошке твоего браузера, в сообщении другу или запостить в свою группу ВКонтакте",
+   "description": "__MSG_desc__",
    "icons": {
       "48": "img/128.png"
    },
+   "default_locale": "ru",
    "incognito": "split",
    "manifest_version": 2,
-   "name": "Запостить фотку ВКонтакте",
+   "name": "__MSG_name__",
    "permissions": [ "storage", "contextMenus", "*://*/*" ],
    "update_url": "https://clients2.google.com/service/update2/crx",
-   "version": "2018.3.16.2",
+   "version": "2018.3.19.1",
    "author": "Plugtopus Agency",
    "homepage_url": "https://plugtopus.agency"
 }
